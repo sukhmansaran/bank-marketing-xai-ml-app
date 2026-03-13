@@ -8,7 +8,7 @@ Production-ready machine learning application predicting bank customer term depo
 
 ## 🚀 Live Demo
 
-**Try it now**: [https://sukhmansaran-bank-marketing-xai-ml-app-appstreamlit-app-6kguh6.streamlit.app/](https://sukhmansaran-bank-marketing-xai-ml-app-appstreamlit-app-6kguh6.streamlit.app/)
+**Try it now**: [https://sukhmansaran-bank-marketing-xai-ml-app-appstreamlit-app-2nypva.streamlit.app/](https://sukhmansaran-bank-marketing-xai-ml-app-appstreamlit-app-2nypva.streamlit.app/)
 
 > Deployed on Streamlit Cloud - No installation required!
 
