@@ -1,8 +1,8 @@
+"""Quick XGBoost training without grid search - for fixing the model file"""
 import pandas as pd
 import numpy as np
 import pickle
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from xgboost import XGBClassifier
 
@@ -36,28 +36,20 @@ for col in non_numeric_columns:
     X_test[col] = le.transform(X_test[col])
     label_encoders[col] = le
 
-# Train model
+# Train model with best parameters from previous grid search
 print("Training model...")
-# Using XGBoost without native categorical support (for SHAP compatibility)
-xgb = XGBClassifier(
-    enable_categorical=False, 
+best_model = XGBClassifier(
+    enable_categorical=False,
     random_state=42,
     use_label_encoder=False,
-    eval_metric='logloss'
+    eval_metric='logloss',
+    max_depth=12,
+    n_estimators=400,
+    learning_rate=0.05,
+    min_child_weight=1
 )
 
-param_grid = {
-    'max_depth': [4, 8, 12, 16, 20],
-    'n_estimators': [100, 200, 300, 400],
-    'learning_rate': [0.1, 0.05, 0.01],
-    'min_child_weight':[1, 5, 10, 15, 20]
-    }
-
-grid_search = GridSearchCV(xgb, param_grid = param_grid, scoring = 'f1', cv = 5, n_jobs = -1)
-grid_search.fit(X_train, y_train)
-
-best_model = grid_search.best_estimator_
-best_params = grid_search.best_params_
+best_model.fit(X_train, y_train)
 
 # Evaluate
 y_pred = best_model.predict(X_test)
@@ -74,7 +66,7 @@ print(f"Recall:    {recall:.4f}")
 print(f"F1-Score:  {f1:.4f}")
 print(f"AUC-ROC:   {roc:.4f}")
 
-# Save model as JSON (this should fix the base_score issue)
+# Save model as JSON
 print("\nSaving model and preprocessors...")
 best_model.save_model('models/model_xgb.json')
 
@@ -84,11 +76,23 @@ test_model = XGBClassifier()
 test_model.load_model('models/model_xgb.json')
 print("✅ Model loads successfully")
 
+# Test with SHAP
+print("\nTesting SHAP compatibility...")
+try:
+    import shap
+    explainer = shap.TreeExplainer(test_model)
+    print("✅ SHAP TreeExplainer works!")
+except Exception as e:
+    print(f"❌ SHAP error: {e}")
+
 # Save label encoders
 with open('models/label_encoders_xgb.pkl', 'wb') as f:
     pickle.dump(label_encoders, f)
 
-print("✅ Model training complete!")
+print("\n✅ Model training complete!")
 print(f"Model saved to: models/model_xgb.json")
 print(f"Label encoders saved to: models/label_encoders_xgb.pkl")
-
+print("\nNow run:")
+print("  git add models/model_xgb.json models/label_encoders_xgb.pkl")
+print("  git commit -m 'Fix: Retrain model to fix base_score format issue'")
+print("  git push")
