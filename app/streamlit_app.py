@@ -49,8 +49,19 @@ def load_label_encoders():
 def load_data():
     """Load training and test data"""
     try:
-        train_df = pd.read_csv('data/processed/train_df.csv')
-        test_df = pd.read_csv('data/processed/test_df.csv')
+        # Load with float_precision='round_trip' to handle scientific notation
+        train_df = pd.read_csv('data/processed/train_df.csv', float_precision='round_trip')
+        test_df = pd.read_csv('data/processed/test_df.csv', float_precision='round_trip')
+        
+        # Convert numeric columns that might have scientific notation strings
+        numeric_cols = ['age', 'duration', 'campaign', 'pdays', 'previous', 
+                       'emp.var.rate', 'cons.price.idx', 'cons.conf.idx', 
+                       'euribor3m', 'nr.employed']
+        
+        for col in numeric_cols:
+            if col in train_df.columns:
+                train_df[col] = pd.to_numeric(train_df[col], errors='coerce')
+                test_df[col] = pd.to_numeric(test_df[col], errors='coerce')
         
         return train_df, test_df
     except Exception as e:
