@@ -1,6 +1,16 @@
 # Bank Marketing XAI ML App
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://sukhmansaran-bank-marketing-xai-ml-app-appstreamlit-app-6kguh6.streamlit.app/)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Production-ready machine learning application predicting bank customer term deposit subscriptions using XGBoost and SHAP for complete model interpretability.
+
+## 🚀 Live Demo
+
+**Try it now**: [https://sukhmansaran-bank-marketing-xai-ml-app-appstreamlit-app-6kguh6.streamlit.app/](https://sukhmansaran-bank-marketing-xai-ml-app-appstreamlit-app-6kguh6.streamlit.app/)
+
+> Deployed on Streamlit Cloud - No installation required!
 
 ## Key Results
 
@@ -182,7 +192,10 @@ SHAP (SHapley Additive exPlanations) values show how each feature contributes to
 
 ## Docker Deployment
 
-### Build and Run
+### Live Demo
+The app is deployed on Streamlit Cloud: [Live Demo](https://sukhmansaran-bank-marketing-xai-ml-app-appstreamlit-app-6kguh6.streamlit.app/)
+
+### Build and Run Locally
 ```bash
 # Build image
 docker build -t bank-deposit-xai:latest .
