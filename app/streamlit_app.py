@@ -101,6 +101,16 @@ def prepare_training_data(train_df, label_encoders):
             if col in X_train.columns:
                 X_train[col] = encoder.transform(X_train[col])
         
+        # Ensure all columns are proper numeric types (not strings)
+        # This handles any edge cases where values might be string representations
+        for col in X_train.columns:
+            if X_train[col].dtype == 'object':
+                # Try to convert object columns to numeric
+                X_train[col] = pd.to_numeric(X_train[col], errors='coerce')
+            # Ensure no NaN values
+            if X_train[col].isna().any():
+                X_train[col] = X_train[col].fillna(0)
+        
         return X_train, True, None
     except Exception as e:
         return None, False, f"Error preparing training data: {str(e)}"
@@ -324,6 +334,8 @@ elif page == "Make Prediction":
                         
                         except Exception as e:
                             st.warning(f"⚠️ SHAP explanation unavailable: {str(e)}")
+                            import traceback
+                            st.code(traceback.format_exc())
                 
                 except Exception as e:
                     st.error(f"❌ Error making prediction: {str(e)}")
