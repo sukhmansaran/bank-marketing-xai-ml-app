@@ -52,15 +52,6 @@ def load_data():
         train_df = pd.read_csv('data/processed/train_df.csv')
         test_df = pd.read_csv('data/processed/test_df.csv')
         
-        # Convert all numeric columns to proper numeric types
-        for col in train_df.columns:
-            if col != 'y':  # Skip target variable
-                try:
-                    train_df[col] = pd.to_numeric(train_df[col], errors='coerce')
-                    test_df[col] = pd.to_numeric(test_df[col], errors='coerce')
-                except:
-                    pass
-        
         return train_df, test_df
     except Exception as e:
         st.error(f"Error loading data: {str(e)}")
@@ -85,10 +76,6 @@ def preprocess_input(input_data, label_encoders):
             if col in input_processed.columns:
                 input_processed[col] = encoder.transform(input_processed[col])
         
-        # Ensure all columns are numeric (convert any remaining strings)
-        for col in input_processed.columns:
-            input_processed[col] = pd.to_numeric(input_processed[col], errors='coerce')
-        
         return input_processed, True, None
     except Exception as e:
         return None, False, f"Preprocessing error: {str(e)}"
@@ -102,10 +89,6 @@ def prepare_training_data(train_df, label_encoders):
         for col, encoder in label_encoders.items():
             if col in X_train.columns:
                 X_train[col] = encoder.transform(X_train[col])
-        
-        # Ensure all columns are numeric (critical for SHAP)
-        for col in X_train.columns:
-            X_train[col] = pd.to_numeric(X_train[col], errors='coerce')
         
         return X_train, True, None
     except Exception as e:
