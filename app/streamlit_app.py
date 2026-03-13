@@ -56,8 +56,8 @@ def load_data():
         for col in train_df.columns:
             if col != 'y':  # Skip target variable
                 try:
-                    train_df[col] = pd.to_numeric(train_df[col], errors='ignore')
-                    test_df[col] = pd.to_numeric(test_df[col], errors='ignore')
+                    train_df[col] = pd.to_numeric(train_df[col], errors='coerce')
+                    test_df[col] = pd.to_numeric(test_df[col], errors='coerce')
                 except:
                     pass
         
