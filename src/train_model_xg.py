@@ -101,3 +101,4 @@ print("✅ Model training complete!")
 print(f"Model saved to: models/model_xgb.pkl")
 print(f"Label encoders saved to: models/label_encoders_xgb.pkl")
 
+print(dir(best_model))
