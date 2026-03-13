@@ -46,17 +46,13 @@ env/
 .jupyter/
 
 # Model files (regenerate with training scripts - exclude from repo)
-*.pkl
-*.json
-models/*.pkl
-models/*.json
+
 
 # Keep README
 !models/README.md
 
 # Data files (exclude large raw datasets - download separately)
-data/raw/*.csv
-data/processed/*.csv
+
 
 # Keep README files
 !data/README.md
