@@ -28,16 +28,13 @@ st.markdown("Predict whether a customer will subscribe to a term deposit with XG
 
 @st.cache_resource
 def load_model():
-    """Load trained XGBoost model from pickle file"""
-    try:
-        # Try pickle file first (more reliable)
-        if os.path.exists('models/model_xgb.pkl'):
-            with open('models/model_xgb.pkl', 'rb') as f:
-                model = pickle.load(f)
-            return model
-    except Exception as e:
-        st.error(f"Error loading model: {str(e)}")
-        return None
+    model_path = "models/model_xgb.pkl"
+
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model file not found: {model_path}")
+
+    model = joblib.load(model_path)
+    return model
 
 @st.cache_resource
 def load_label_encoders():
@@ -96,7 +93,7 @@ def get_shap_explainer(_model, _X_train):
         X_train_clean = X_train_clean.astype('float64')
         
         # Create explainer with clean data
-        explainer = shap.TreeExplainer(_model, X_train_clean)
+        explainer = shap.TreeExplainer(_model)
         return explainer
         
     except Exception as e:
