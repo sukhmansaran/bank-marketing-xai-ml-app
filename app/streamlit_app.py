@@ -12,6 +12,12 @@ warnings.filterwarnings("ignore")
 # Page config
 st.set_page_config(page_title="Bank Deposit Prediction", layout="wide")
 
+# Add cache clear button in sidebar
+if st.sidebar.button("🔄 Clear Cache"):
+    st.cache_data.clear()
+    st.cache_resource.clear()
+    st.sidebar.success("Cache cleared! Please refresh the page.")
+
 # Title
 st.title("🏦 Bank Deposit Prediction with XAI")
 st.markdown("Predict whether a customer will subscribe to a term deposit with XGBoost & SHAP")
@@ -68,13 +74,47 @@ def load_data():
         st.error(f"Error loading data: {str(e)}")
         return None, None
 
-@st.cache_resource
+@st.cache_resource(show_spinner="Creating SHAP explainer...")
 def get_shap_explainer(_model, _X_train):
-    """Create SHAP explainer"""
+    """Create SHAP explainer with robust error handling"""
     try:
-        return shap.TreeExplainer(_model)
+        # Ensure X_train is all numeric (no object dtypes)
+        X_train_clean = _X_train.copy()
+        
+        # Convert any object columns to numeric
+        for col in X_train_clean.columns:
+            if X_train_clean[col].dtype == 'object':
+                try:
+                    X_train_clean[col] = pd.to_numeric(X_train_clean[col], errors='coerce')
+                except:
+                    pass
+        
+        # Fill any NaN values
+        X_train_clean = X_train_clean.fillna(0)
+        
+        # Ensure all values are float type (SHAP prefers float)
+        X_train_clean = X_train_clean.astype('float64')
+        
+        # Create explainer with clean data
+        explainer = shap.TreeExplainer(_model, X_train_clean)
+        return explainer
+        
     except Exception as e:
-        st.error(f"Error creating SHAP explainer: {str(e)}")
+        error_msg = str(e)
+        st.error(f"Error creating SHAP explainer: {error_msg}")
+        
+        # Show detailed traceback
+        import traceback
+        with st.expander("Show detailed error traceback"):
+            st.code(traceback.format_exc())
+        
+        # Show data info for debugging
+        with st.expander("Show data info for debugging"):
+            st.write("X_train shape:", _X_train.shape)
+            st.write("X_train dtypes:", _X_train.dtypes.to_dict())
+            st.write("Sample row:", _X_train.iloc[0].to_dict())
+            st.write("Any NaN values?:", _X_train.isna().sum().to_dict())
+        
         return None
 
 def preprocess_input(input_data, label_encoders):
