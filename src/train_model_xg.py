@@ -42,7 +42,8 @@ print("Training model...")
 xgb = XGBClassifier(
     enable_categorical=False, 
     random_state=42,
-    eval_metric='logloss'
+    eval_metric='logloss',
+    # device='cuda'
 )
 
 param_grid = {
