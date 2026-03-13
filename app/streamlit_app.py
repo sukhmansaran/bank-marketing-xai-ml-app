@@ -28,13 +28,13 @@ st.markdown("Predict whether a customer will subscribe to a term deposit with XG
 
 @st.cache_resource
 def load_model():
-    """Load trained XGBoost model from JSON"""
+    """Load trained XGBoost model from pickle file"""
     try:
-        if os.path.exists('models/model_xgb.json'):
-            model = XGBClassifier()
-            model.load_model('models/model_xgb.json')
+        # Try pickle file first (more reliable)
+        if os.path.exists('models/model_xgb.pkl'):
+            with open('models/model_xgb.pkl', 'rb') as f:
+                model = pickle.load(f)
             return model
-        return None
     except Exception as e:
         st.error(f"Error loading model: {str(e)}")
         return None

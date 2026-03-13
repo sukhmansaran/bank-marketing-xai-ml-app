@@ -74,21 +74,31 @@ print(f"Recall:    {recall:.4f}")
 print(f"F1-Score:  {f1:.4f}")
 print(f"AUC-ROC:   {roc:.4f}")
 
-# Save model as JSON (this should fix the base_score issue)
+# Save model using PICKLE (more reliable than JSON for SHAP compatibility)
 print("\nSaving model and preprocessors...")
-best_model.save_model('models/model_xgb.json')
+with open('models/model_xgb.pkl', 'wb') as f:
+    pickle.dump(best_model, f)
 
 # Verify the model can be loaded
 print("\nVerifying model can be loaded...")
-test_model = XGBClassifier()
-test_model.load_model('models/model_xgb.json')
+with open('models/model_xgb.pkl', 'rb') as f:
+    test_model = pickle.load(f)
 print("✅ Model loads successfully")
+
+# Test SHAP compatibility
+print("\nTesting SHAP compatibility...")
+try:
+    import shap
+    explainer = shap.TreeExplainer(test_model)
+    print("✅ SHAP TreeExplainer works!")
+except Exception as e:
+    print(f"❌ SHAP error: {e}")
 
 # Save label encoders
 with open('models/label_encoders_xgb.pkl', 'wb') as f:
     pickle.dump(label_encoders, f)
 
 print("✅ Model training complete!")
-print(f"Model saved to: models/model_xgb.json")
+print(f"Model saved to: models/model_xgb.pkl")
 print(f"Label encoders saved to: models/label_encoders_xgb.pkl")
 
