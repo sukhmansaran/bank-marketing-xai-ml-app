@@ -42,7 +42,6 @@ print("Training model...")
 xgb = XGBClassifier(
     enable_categorical=False, 
     random_state=42,
-    use_label_encoder=False,
     eval_metric='logloss'
 )
 
